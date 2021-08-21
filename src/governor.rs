@@ -13,7 +13,7 @@ pub struct Governor<const N: usize> {
 }
 
 impl<const N: usize> Governor<N> {
-    /// Returns new governer instance
+    /// Returns new governor instance
     ///
     ///```
     /// # use state_governor::Governor;
