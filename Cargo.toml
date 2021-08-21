@@ -1,0 +1,16 @@
+[package]
+name = "state-governor"
+description = "A state management library focused on to be used in embedded systems."
+authors = ["Talha Can Havadar <talhahavadar@hotmail.com>"]
+keywords = ["state", "state-management", "embedded", "memory"]
+categories = ["embedded", "no-std"]
+version = "0.0.1"
+edition = "2018"
+homepage = "https://github.com/Badger-Embedded/state-governor"
+repository = "https://github.com/Badger-Embedded/state-governor"
+license = "LGPL-3.0-only"
+readme = "README.md"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
