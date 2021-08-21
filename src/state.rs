@@ -24,14 +24,23 @@ impl State {
         }
     }
 
+    /// Creates new State with id 0xFF and name 'UNKNOWN'.
+    ///```
+    /// # use state_governor::state::State;
+    /// let s_unknown = State::unknown();
+    /// assert_eq!(s_unknown.id(), 0xFF);
+    /// assert_eq!(s_unknown.name().iter().collect::<String>().trim(), "UNKNOWN")
+    ///```
     pub fn unknown() -> Self {
         Self::new(0xFF, "UNKNOWN")
     }
 
+    /// Returns id of state.
     pub fn id(&self) -> u8 {
         self.id
     }
 
+    /// Returns name of state.
     pub fn name(&self) -> &[char; 32] {
         &self.name
     }
@@ -59,24 +68,36 @@ impl PartialEq for State {
 #[macro_export]
 macro_rules! create_states {
     ( $($name:ident),* ) => {
-            #[derive(Debug, Clone, Copy)]
-            pub enum StateEnum {
-                $($name),*
-            }
+        #[derive(Debug, Clone, Copy)]
+        pub enum StateEnum {
+            $($name),*
+        }
 
-            impl StateEnum {
-                fn name(&self) -> &'static str {
-                    match self {
-                        $(StateEnum::$name => stringify!($name)),*
-                    }
+        impl StateEnum {
+            fn name(&self) -> &'static str {
+                match self {
+                    $(StateEnum::$name => stringify!($name)),*
                 }
             }
+        }
 
-            impl From<StateEnum> for state_governor::state::State {
-                #[inline]
-                fn from(state_enum: StateEnum) -> Self {
-                    state_governor::state::State::new(state_enum as u8, state_enum.name())
+        impl core::convert::TryFrom<u8> for StateEnum {
+            type Error = ();
+
+            fn try_from(v: u8) -> Result<Self, Self::Error> {
+                match v {
+                    $(x if x == StateEnum::$name as u8 => Ok(StateEnum::$name), )*
+                    _ => Err(()),
                 }
             }
+        }
+
+        impl From<StateEnum> for state_governor::state::State {
+            #[inline]
+            fn from(state_enum: StateEnum) -> Self {
+                state_governor::state::State::new(state_enum as u8, state_enum.name())
+            }
+        }
+
     };
 }
