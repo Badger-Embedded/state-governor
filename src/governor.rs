@@ -6,13 +6,13 @@ use crate::state::State;
 ///
 /// Manages all state transitions
 #[derive(Debug)]
-pub struct Governor<'a, const N: usize> {
+pub struct Governor<const N: usize> {
     states: LinearMap<u8, State, N>,
-    current_state: Option<&'a State>,
-    previous_state: Option<&'a State>,
+    current_state: Option<State>,
+    previous_state: Option<State>,
 }
 
-impl<'a, const N: usize> Governor<'a, N> {
+impl<const N: usize> Governor<N> {
     /// Returns new governer instance
     ///
     ///```
@@ -22,8 +22,8 @@ impl<'a, const N: usize> Governor<'a, N> {
     pub const fn new() -> Self {
         Self {
             states: LinearMap::new(),
-            current_state: None,
-            previous_state: None,
+            current_state: Some(State::unknown()),
+            previous_state: Some(State::unknown()),
         }
     }
 
@@ -63,10 +63,12 @@ impl<'a, const N: usize> Governor<'a, N> {
     /// assert_eq!(result, false);
     /// # }
     ///```
-    pub fn change_state_to(&'a mut self, state_id: u8) -> bool {
+    pub fn change_state_to(&mut self, state_id: u8) -> bool {
         if self.states.contains_key(&state_id) {
             self.previous_state = self.current_state;
-            self.current_state = self.states.get(&state_id);
+            if let Some(s) = self.states.get(&state_id) {
+                self.current_state = Some(*s);
+            }
             true
         } else {
             false
@@ -85,7 +87,11 @@ impl<'a, const N: usize> Governor<'a, N> {
     /// assert_eq!(s.id(), 0x1);
     /// # }
     ///```
-    pub fn get_current_state(&mut self) -> &'a State {
-        self.current_state.unwrap()
+    pub fn get_current_state(&mut self) -> State {
+        if let Some(s) = self.current_state {
+            s
+        } else {
+            State::unknown()
+        }
     }
 }

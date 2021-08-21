@@ -31,8 +31,14 @@ impl State {
     /// assert_eq!(s_unknown.id(), 0xFF);
     /// assert_eq!(s_unknown.name().iter().collect::<String>().trim(), "UNKNOWN")
     ///```
-    pub fn unknown() -> Self {
-        Self::new(0xFF, "UNKNOWN")
+    pub const fn unknown() -> Self {
+        Self {
+            id: 0xFF,
+            name: [
+                'U', 'N', 'K', 'N', 'O', 'W', 'N', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',
+                ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',
+            ],
+        }
     }
 
     /// Returns id of state.
