@@ -1,10 +1,16 @@
 use core::convert::TryInto;
 
+use heapless::LinearMap;
 use state_governor::{create_states, state::State, Governor};
 
 create_states! {IDLE, RUN, FINISH}
 
-static mut GOVERNOR: Governor<3> = Governor::<3>::new();
+static mut GOVERNOR: Governor<3> = Governor::<3> {
+    states: LinearMap::new(),
+    current_state: Some(State::unknown()),
+    previous_state: Some(State::unknown()),
+    transition_function: None,
+};
 
 fn state_changer() {
     unsafe {
