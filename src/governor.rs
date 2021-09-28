@@ -2,20 +2,20 @@ use heapless::LinearMap;
 
 use crate::state::State;
 
-type TransitionFunc<C> = fn(C, Option<State>, Option<State>) -> bool;
+type TransitionFunc = fn(Option<State>, Option<State>) -> bool;
 
 /// Governor
 ///
 /// Manages all state transitions
 #[derive(Debug)]
-pub struct Governor<C, const N: usize> {
+pub struct Governor<const N: usize> {
     pub states: LinearMap<u8, State, N>,
     pub current_state: Option<State>,
     pub previous_state: Option<State>,
-    pub transition_function: Option<TransitionFunc<C>>,
+    pub transition_function: Option<TransitionFunc>,
 }
 
-impl<C, const N: usize> Governor<C, N> {
+impl<const N: usize> Governor<N> {
     /// Returns new governor instance
     ///
     ///```
@@ -67,11 +67,11 @@ impl<C, const N: usize> Governor<C, N> {
     /// assert_eq!(result, false);
     /// # }
     ///```
-    pub fn change_state_to(&mut self, context: C, state_id: u8) -> bool {
+    pub fn change_state_to(&mut self, state_id: u8) -> bool {
         if self.states.contains_key(&state_id) {
             if let Some(s) = self.states.get(&state_id) {
                 if let Some(transition_func) = self.transition_function {
-                    if transition_func(context, self.current_state, Some(*s)) {
+                    if transition_func(self.current_state, Some(*s)) {
                         self.previous_state = self.current_state;
                         self.current_state = Some(*s);
                         true
@@ -130,12 +130,12 @@ impl<C, const N: usize> Governor<C, N> {
     /// assert_eq!(result, true);
     /// unsafe { assert_eq!(CALLED, true); }
     ///```
-    pub fn set_state_transition_func(&mut self, function: TransitionFunc<C>) {
+    pub fn set_state_transition_func(&mut self, function: TransitionFunc) {
         self.transition_function = Some(function);
     }
 }
 
-impl<C, const N: usize> Default for Governor<C, N> {
+impl<const N: usize> Default for Governor<N> {
     fn default() -> Self {
         Self::new()
     }
