@@ -74,7 +74,7 @@ impl PartialEq for State {
 #[macro_export]
 macro_rules! create_states {
     ( $($name:ident),* ) => {
-        #[derive(Debug, Clone, Copy)]
+        #[derive(Debug, Clone, Copy, PartialEq)]
         pub enum StateEnum {
             $($name),*
         }
